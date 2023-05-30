@@ -108,24 +108,40 @@ return `rgb(${red}, ${green}, ${blue})`;
 }
 
 async function drawPredictions(predictions) {
-ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-ctx.font = '16px sans-serif';
-ctx.textBaseline = 'top';
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.font = '16px sans-serif';
+    ctx.textBaseline = 'top';
 
-predictions.forEach(prediction => {
-    const x = prediction.bbox[0];
-    const y = prediction.bbox[1];
-    const width = prediction.bbox[2];
-    const height = prediction.bbox[3];
+    // Clear previous description boxes
+    const descriptionContainer = document.getElementById('description-container');
+    descriptionContainer.innerHTML = '';
 
-    ctx.strokeStyle = getColorBySize(prediction.bbox);
-    ctx.lineWidth = 2;
-    ctx.strokeRect(x, y, width, height);
+    predictions.forEach(prediction => {
+        const x = prediction.bbox[0];
+        const y = prediction.bbox[1];
+        const width = prediction.bbox[2];
+        const height = prediction.bbox[3];
 
-    ctx.fillStyle = getColorBySize(prediction.bbox);
-    ctx.fillText(prediction.class, x, y);
-});
+        ctx.strokeStyle = getColorBySize(prediction.bbox);
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, width, height);
+
+        ctx.fillStyle = getColorBySize(prediction.bbox);
+        ctx.fillText(prediction.class, x, y);
+
+        // Create and position the description box
+        const descriptionBox = document.createElement('div');
+        descriptionBox.className = 'description-box';
+        descriptionBox.textContent = prediction.class;
+
+        descriptionBox.style.position = 'absolute';
+        descriptionBox.style.left = `${x}px`;
+        descriptionBox.style.top = `${y + height}px`;
+
+        descriptionContainer.appendChild(descriptionBox);
+    });
 }
+
 
 let currentPredictions = [];
 
